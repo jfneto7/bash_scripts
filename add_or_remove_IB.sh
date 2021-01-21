@@ -63,7 +63,7 @@ usage() {
 
 It adds or removes an IB adapter from an specific LPAR, depending on your choice.
 It adds or removes on Infiniband adapter at a time.
-It has to be executed from EMS rb3i0001 or rb3i1001m
+It has to be executed from EMS ems01 or ems02
  ${bold}Options:${reset}
   -h, --help        Display this help and exit
   -v, --version     Output version information and exit

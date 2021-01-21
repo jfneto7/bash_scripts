@@ -37,7 +37,7 @@ usage() {
   echo -n "${script_name} <LPAR>
 
 It removes an SRIOV adapter (one at a time) from an specific LPAR.
-Execute this one from EMS rb3i0001 or rb3i1001m
+Execute this one from EMS ems-server1 or ems-server2
  ${bold}Options:${reset}
   -h, --help        Display this help and exit
   -v, --version     Output version information and exit
