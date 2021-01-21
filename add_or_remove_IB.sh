@@ -14,7 +14,7 @@
 # Making sure this script's been ran from EMS rb3i0001 or rb3i1001m
 if [[ $HOSTNAME != ems01 ]] && [[ $HOSTNAME != ems02 ]]
 then
-echo "Please run this script either from EMS rb3i0001 or in rb3i1001m."
+echo "Please run this script either from EMS ems01 or in ems02."
 exit 2;
 fi
 
@@ -185,7 +185,7 @@ do
 
     # Only bring up the adapter physical location code, to not cause any confusion.
     $CAT $FILE | cut -d "," -f1
-    
+
     $ECHO -n "Enter the IB adapter want to remove: "
     read rem_ib_adapter
 
