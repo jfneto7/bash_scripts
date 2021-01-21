@@ -32,9 +32,12 @@ script_name=$(basename "$0")
 version="1.0"
 ### END variables ###
 
+## USAGE + getopts section ## =D
 usage() {
   echo -n "${script_name} <LPAR>
-It removes an SRIOV adapter from an specific LPAR.
+
+It removes an SRIOV adapter (one at a time) from an specific LPAR.
+Execute this one from EMS rb3i0001 or rb3i1001m
  ${bold}Options:${reset}
   -h, --help        Display this help and exit
   -v, --version     Output version information and exit
@@ -59,7 +62,7 @@ exit 1
 fi
 
 ### Code ###
-# Nested loop to find frame and lpar in the right
+# Finding frame and lpar in our stack
 for hmc in $hmclist
 do
   frame=$(ssh hscroot@$hmc 'lssyscfg -r sys -F name | \
@@ -75,15 +78,26 @@ do
   if [[ ! -z $frame ]]
   then
     ssh -q hscroot@$hmc lshwres -r sriov --rsubtype logport -m $frame --level eth -F lpar_name,location_code,adapter_id,logical_port_id| grep $host > $FILE
-    cat $FILE
+    cat $FILE| awk -F "," {'print$2'}
+
+    # check if machine has SRIOV adapter attached to it.
+    if [ ! -s $FILE ]
+    then
+      echo "NO SRIOV attached in this LPAR."
+      exit 4;
+    fi
+
     echo -n "Enter the sriov adapter want to remove: "
     read rem_sriov_adapter
-    adapter_id=$(cat $FILE| grep $rem_sriov_adapter| cut -d "," -f3)
-    if [[ -z $adapter_id ]] #checking sriov adapter if it is an existing one.
+
+# Checking if selected SRIOV adapter is valid
+    grep -w $rem_sriov_adapter $FILE > /dev/null 2>&1
+    if [[ $? -ne 0 ]]
     then
-      echo "[!]SRIOV not valid. Exiting..."
-      exit 0
-    fi
+       echo "[!]SRIOV not valid. Exiting..."
+       exit 1;
+
+    adapter_id=$(cat $FILE| grep $rem_sriov_adapter| cut -d "," -f3)
     logical_port_id=$(cat $FILE| grep $rem_sriov_adapter| cut -d "," -f4)
 
   #Confirmation that it can be removed
